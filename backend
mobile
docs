@@ -1,0 +1,18 @@
+from fastapi import FastAPI, UploadFile
+import uuid
+import os
+
+app = FastAPI()
+
+UPLOAD_DIR = "uploads"
+os.makedirs(UPLOAD_DIR, exist_ok=True)
+
+@app.post("/upload")
+async def upload_audio(file: UploadFile):
+    file_id = str(uuid.uuid4())
+    file_path = f"{UPLOAD_DIR}/{file_id}.wav"
+
+    with open(file_path, "wb") as buffer:
+        buffer.write(await file.read())
+
+    return {"status": "ok", "file_id": file_id}
